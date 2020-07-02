@@ -1,4 +1,4 @@
-# vue-test
+# name-your-project
 
 ## Project setup
 
