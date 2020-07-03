@@ -10,7 +10,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="命名规范：">
-          <el-select @change="showResult" v-model="nomenclature" placeholder="请选择">
+          <el-select class="nomenclature" @change="showResult" v-model="nomenclature" placeholder="请选择">
             <el-option
               v-for="item in nomenclatureOptions"
               :key="item.value"
@@ -63,6 +63,7 @@ export default {
       this.showResult()
     },
     showResult () {
+      if (!this.randomName) return false
       this.result = changeCase(this.randomName, this.nomenclature)
     }
   }
