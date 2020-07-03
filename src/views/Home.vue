@@ -15,12 +15,12 @@
             <el-radio-button v-for="type in types" :label="type" :key="type"></el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="命名规范：">
+        <el-form-item label="Specification:">
           <el-select
             class="nomenclature"
             @change="showResult"
             v-model="nomenclature"
-            placeholder="请选择"
+            placeholder="Select"
           >
             <el-option
               v-for="item in nomenclatureOptions"
@@ -31,7 +31,7 @@
           </el-select>
         </el-form-item>
         <el-form-item v-show="showTextArea">
-          <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="text"></el-input>
+          <el-input type="textarea" :rows="2" placeholder="Please input" v-model="text"></el-input>
         </el-form-item>
       </el-form>
     </div>
@@ -56,15 +56,15 @@ export default {
   watch: {
     type () {
       console.log(this.type)
-      this.showTextArea = this.type === '翻译'
+      this.showTextArea = this.type === 'Translation'
     }
   },
   data () {
     return {
       showTextArea: false,
       text: '',
-      type: '随机',
-      types: ['随机', '翻译'],
+      type: 'Random Name',
+      types: ['Random Name', 'Translation'],
       nomenclature: '',
       nomenclatureOptions: [],
       result: '',
@@ -87,26 +87,42 @@ export default {
       const secretKey = 'W3jr9aME239y9PXF0kTu'
       const salt = (new Date()).getTime()
       const sign = md5(appId + q + salt + secretKey)
-      const url = `http://api.fanyi.baidu.com/api/trans/vip/translate?q=${encodeURI(q)}&from=zh&to=en&appid=${appId}&salt=${salt}&sign=${sign}&action=1`
+      const baseUrl = {
+        http: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
+        https: 'https://fanyi-api.baidu.com/api/trans/vip/translate'
+      }
+      const url = `${baseUrl.https}?q=${encodeURI(q)}&from=zh&to=en&appid=${appId}&salt=${salt}&sign=${sign}&action=1`
       jsonp(url, null, (err, data) => {
-        console.log('err', err)
-        console.log('data', data)
+        if (err) {
+          console.log('err', err)
+          this.result = ''
+          this.randomName = ''
+        }
         if (data) {
-          this.randomName = data.trans_result[0].dst.split(' ')
+          try {
+            this.randomName = data.trans_result[0].dst.split(' ')
+          } catch (e) {
+            this.randomName = ''
+          }
           this.showResult()
         }
       })
     },
     getRandomName () {
-      if (this.type === '随机') {
+      if (this.type === 'Random Name') {
         this.randomName = getRandomName()
         this.showResult()
       } else {
-        this.translate(this.text)
+        if (!this.text) {
+          this.result = ''
+          this.randomName = ''
+        } else {
+          this.translate(this.text)
+        }
       }
     },
     showResult () {
-      if (!this.randomName) return false
+      if (!this.randomName) return (this.result = '')
       this.result = changeCase(this.randomName, this.nomenclature)
     }
   }
@@ -124,6 +140,7 @@ export default {
   background-color: #21252b;
   .submit {
     position: absolute;
+    z-index: 9;
     top: 50%;
     right: 0;
     transform: translate(50%, -50%);
