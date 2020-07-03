@@ -1,5 +1,5 @@
-const FIRST_NAME = ['brave', 'witty', 'ingenious', 'smart']
-const LAST_NAME = ['seaweed', 'dolphin', 'seals']
+import FIRST_NAME from './adjectives'
+import LAST_NAME from './name'
 
 const getRandomItemFromArray = arr => arr[Math.floor((Math.random() * arr.length))]
 
